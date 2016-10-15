@@ -11,6 +11,7 @@ type Controller struct {
 	common.Controller
 }
 
+// SignIn is the handler for signing in from a client
 func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	c.SendJSON(
 		w,
