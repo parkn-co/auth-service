@@ -2,18 +2,22 @@ package router
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/parkn-co/parkn-server/src/authentication"
+	"github.com/parkn-co/parkn-server/src/datastore"
+	"github.com/urfave/negroni"
 )
 
 // InitRouter returns the router object
-func InitRouter() *mux.Router {
+func InitRouter() *negroni.Negroni {
 	r := mux.NewRouter()
 	sub := r.PathPrefix("/api/v1/").Subrouter()
 
-	// Routes handling
-	authController := &authentication.Controller{}
-	authSubRouter := sub.PathPrefix("/authentication/").Subrouter()
-	authSubRouter.HandleFunc("/signin", authController.SignIn).Methods("GET")
+	ds := datastore.Connect()
 
-	return r
+	// Routes handling
+	setAuthenticationRoutes(sub, ds)
+
+	n := negroni.Classic()
+	n.UseHandler(r)
+
+	return n
 }

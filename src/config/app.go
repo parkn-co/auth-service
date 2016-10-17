@@ -18,17 +18,18 @@ var App struct {
 
 	Database struct {
 		MongoDB struct {
-			URL string `env:"MONGODB_URI"`
+			URL  string `env:"MONGODB_URI"`
+			Name string `env:"MONGODB_NAME"`
 		}
+	}
+
+	Security struct {
+		Secret string `env:"SECTRET"`
 	}
 }
 
 func init() {
 	setFromEnv(reflect.ValueOf(&App))
-
-	// if App.Server.CORSHeader == "" {
-	// 	App.Server.CORSHeader = App.Server.FrontEndURL
-	// }
 }
 
 func setFromEnv(v reflect.Value) {
