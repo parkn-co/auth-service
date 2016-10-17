@@ -44,16 +44,3 @@ func GenerateJwt(userID string) (string, error) {
 
 	return t, nil
 }
-
-func getTokenRemainingValidity(timestamp interface{}) int {
-	if validity, ok := timestamp.(float64); ok {
-		tm := time.Unix(int64(validity), 0)
-		remainer := tm.Sub(time.Now())
-
-		if remainer > 0 {
-			return int(remainer.Seconds()) + expirationDelta
-		}
-	}
-
-	return expirationDelta
-}
