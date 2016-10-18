@@ -18,6 +18,7 @@ func InitRouter() http.Handler {
 
 	// Routes handling
 	setAuthenticationRoutes(sub, ds)
+	setUsersRoutes(sub, ds)
 	setSpotsRoutes(sub, ds)
 
 	routerWithMiddlewares := handlers.LoggingHandler(os.Stdout, r)

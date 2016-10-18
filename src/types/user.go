@@ -12,7 +12,7 @@ type User struct {
 	Email        string        `json:"email" schema:"email"`
 	FirstName    string        `json:"firstName" schema:"firstName"`
 	LastName     string        `json:"lastName" shema:"lastName"`
-	PasswordHash string
+	PasswordHash string        `json:"-"`
 }
 
 // Validate is used to validate a user
