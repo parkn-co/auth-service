@@ -31,9 +31,11 @@ func Authenticate(user *types.User, loginRequest *types.LoginRequest) bool {
 // GenerateJwt generates a new token for the user
 func GenerateJwt(userID string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp": time.Now().Add(time.Hour * time.Duration(expirationDelta)).Unix(),
-		"iat": time.Now().Unix(),
-		"sub": userID,
+		"exp":  time.Now().Add(time.Hour * time.Duration(expirationDelta)).Unix(),
+		"iat":  time.Now().Unix(),
+		"sub":  userID,
+		"alg":  "HS256",
+		"type": "JWT",
 	})
 
 	// Generate encoded token and send it as response.

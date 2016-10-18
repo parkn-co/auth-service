@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/Schema"
-
 	"github.com/parkn-co/parkn-server/src/datastore"
 	"github.com/parkn-co/parkn-server/src/types"
 )
@@ -13,10 +11,12 @@ import (
 // Authentication is the controller for authentication routes
 type Authentication struct {
 	baseController
-	DataStore *datastore.DataStore
 }
 
-var decoder = schema.NewDecoder()
+// NewAuthController returns a new Authentication controller
+func NewAuthController(ds *datastore.DataStore) *Authentication {
+	return &Authentication{newBaseController(ds)}
+}
 
 // SignUp is the handler for signing up from a client
 func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := types.NewUser{}
-	err = decoder.Decode(&user, r.PostForm)
+	err = c.decoder.Decode(&user, r.PostForm)
 	if err != nil {
 		c.SendNotFound(w, r)
 		return
@@ -89,7 +89,7 @@ func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	loginRequest := &types.LoginRequest{}
-	err = decoder.Decode(loginRequest, r.PostForm)
+	err = c.decoder.Decode(loginRequest, r.PostForm)
 	if err != nil {
 		c.SendNotFound(w, r)
 		return

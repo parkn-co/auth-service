@@ -30,7 +30,7 @@ func (ds *DataStore) NewDataStore() *DataStore {
 	return &DataStore{
 		mongoSession: session,
 		Users:        mongo.NewUsersCollection(collectionFromSession(session, "Users")),
-		Sessions:     mongo.NewSessionsCollection(collectionFromSession(session, "Sessions")),
+		Sessions:     mongo.NewSessionsCollection(collectionFromSession(session, "Sessions"), session),
 	}
 }
 

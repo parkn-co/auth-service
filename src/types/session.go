@@ -1,26 +1,34 @@
 package types
 
 import (
+	"fmt"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/parkn-co/parkn-server/src/config"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
+var dbname = config.App.Database.MongoDB.Name
+
 // Session is the type we use to store client sessions
 type Session struct {
-	ID    bson.ObjectId `bson:"_id,omitempty"`
-	User  mongoReference
-	Token string
+	ID      bson.ObjectId `bson:"_id,omitempty"`
+	UserRef mgo.DBRef
+	User    interface{}
+	Token   string
 }
 
 // NewSession creates a new session object
 func NewSession(userID bson.ObjectId, token string) *Session {
 	return &Session{
-		User: mongoReference{
-			Ref: "Users",
-			ID:  userID,
+		UserRef: mgo.DBRef{
+			Collection: "Users",
+			Id:         userID,
+			Database:   dbname,
 		},
 		Token: token,
+		User:  nil,
 	}
 }
 
@@ -46,6 +54,10 @@ func (s *Session) IsValid() bool {
 
 func (s *Session) parseToken() (*jwt.Token, error) {
 	return jwt.Parse(s.Token, func(token *jwt.Token) (interface{}, error) {
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
 		return []byte(config.App.Security.Secret), nil
 	})
 }

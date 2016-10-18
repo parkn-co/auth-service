@@ -7,8 +7,9 @@ import (
 )
 
 func setAuthenticationRoutes(router *mux.Router, ds *datastore.DataStore) {
-	authController := &controllers.Authentication{DataStore: ds}
-	authSubRouter := router.PathPrefix("/auth/").Subrouter()
-	authSubRouter.HandleFunc("/signup", authController.SignUp).Methods("POST")
-	authSubRouter.HandleFunc("/signin", authController.SignIn).Methods("POST")
+	authController := controllers.NewAuthController(ds)
+	sub := router.PathPrefix("/auth/").Subrouter()
+
+	sub.HandleFunc("/signup", authController.SignUp).Methods("POST")
+	sub.HandleFunc("/signin", authController.SignIn).Methods("POST")
 }
