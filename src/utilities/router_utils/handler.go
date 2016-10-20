@@ -43,7 +43,7 @@ func (h Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		data = err
 	}
 
-	sendResponse(res, req, code, data)
+	writeResponse(res, req, code, data)
 }
 
 // UseMiddlewares applies one or more middlewares for a HandlerFunc
@@ -53,10 +53,10 @@ func (h Handler) UseMiddlewares(middlewares ...middleware) Handler {
 	return h
 }
 
-// sendResponse marshals v to a json struct and sends appropriate headers to w
-func sendResponse(w http.ResponseWriter, r *http.Request, code int, v interface{}) {
+// writeResponse marshals data to a json struct and sends appropriate headers to w
+func writeResponse(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
-	b, err := json.Marshal(v)
+	b, err := json.Marshal(data)
 
 	if err != nil {
 		log.Print(fmt.Sprintf("Error while encoding JSON: %v", err))
