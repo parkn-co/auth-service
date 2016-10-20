@@ -1,6 +1,7 @@
 package router
 
 import (
+	"io"
 	"net/http"
 	"os"
 
@@ -21,8 +22,15 @@ func InitRouter() http.Handler {
 	setUsersRoutes(sub, ds)
 	setSpotsRoutes(sub, ds)
 
+	sub.HandleFunc("/", rootHandler).Methods("GET")
+
 	routerWithMiddlewares := handlers.LoggingHandler(os.Stdout, r)
 	routerWithMiddlewares = handlers.RecoveryHandler()(routerWithMiddlewares)
 
 	return routerWithMiddlewares
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, "Parkn API V1")
 }

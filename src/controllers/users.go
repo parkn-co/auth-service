@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/context"
 	"github.com/parkn-co/parkn-server/src/datastore"
+	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 // Users is the controller for routes dealing with users
@@ -18,13 +19,8 @@ func NewUsersController(ds *datastore.DataStore) *Users {
 }
 
 // UserProfile is the handler for returning a user
-func (c *Users) UserProfile(w http.ResponseWriter, r *http.Request) {
+func (c *Users) UserProfile(w http.ResponseWriter, r *http.Request) (int, interface{}) {
 	user := context.Get(r, "user")
 
-	c.SendJSON(
-		w,
-		r,
-		map[string]interface{}{"data": user},
-		http.StatusOK,
-	)
+	return http.StatusOK, routerutils.Response(user)
 }

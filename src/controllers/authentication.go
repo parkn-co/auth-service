@@ -6,6 +6,7 @@ import (
 
 	"github.com/parkn-co/parkn-server/src/datastore"
 	"github.com/parkn-co/parkn-server/src/types"
+	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 // Authentication is the controller for authentication routes
@@ -19,7 +20,7 @@ func NewAuthController(ds *datastore.DataStore) *Authentication {
 }
 
 // SignUp is the handler for signing up from a client
-func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) {
+func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) (int, interface{}) {
 	ds := c.DataStore.NewDataStore()
 	defer ds.Close()
 
@@ -33,56 +34,36 @@ func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) {
 	user := types.NewUser{}
 	err = c.decoder.Decode(&user, r.PostForm)
 	if err != nil {
-		c.SendNotFound(w, r)
-		return
+		return routerutils.NotFound()
 	}
 
 	errors, ok := user.Validate()
 	if !ok {
-		c.SendJSON(
-			w,
-			r,
-			map[string]map[string]string{"errors": errors},
-			http.StatusBadRequest,
-		)
-
-		return
+		return http.StatusBadRequest, routerutils.FormErrorResponse(errors)
 	}
 
 	// check to make sure user doesn't already exist here
 	if c.DataStore.Users.UserExistsByEmail(user.Email) {
-		c.SendJSON(
-			w,
-			r,
-			map[string]string{"error": "Email is associated with an existing account"},
-			http.StatusBadRequest,
-		)
+		errs := "Email is associated with an existing account"
 
-		return
+		return http.StatusConflict, routerutils.ErrorResponse(errs)
 	}
 
 	id, err := c.DataStore.Users.CreateUser(&user)
 	if err != nil {
-		c.SendInternalError(w, r)
-		return
+		return routerutils.InternalError()
 	}
 
 	token, err := ds.Sessions.NewSession(id)
 	if err != nil {
-		c.SendInternalError(w, r)
-		return
+		return routerutils.InternalError()
 	}
 
-	c.SendJSON(
-		w,
-		r,
-		map[string]interface{}{"success": true, "token": token},
-		http.StatusOK,
-	)
+	return http.StatusCreated, routerutils.Response(map[string]interface{}{"token": token})
 }
 
 // SignIn is the handler for signing in
-func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) {
+func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) (int, interface{}) {
 	ds := c.DataStore.NewDataStore()
 	defer ds.Close()
 
@@ -91,38 +72,25 @@ func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) {
 	loginRequest := &types.LoginRequest{}
 	err = c.decoder.Decode(loginRequest, r.PostForm)
 	if err != nil {
-		c.SendNotFound(w, r)
-		return
+		return routerutils.NotFound()
 	}
 
-	if loginRequest.Email == "" || loginRequest.Password == "" {
-		c.SendJSON(
-			w,
-			r,
-			map[string]string{"error": "User name and password is required"},
-			http.StatusBadRequest,
-		)
-		return
+	errs, ok := loginRequest.Validate()
+	if !ok {
+		return http.StatusBadRequest, routerutils.FormErrorResponse(errs)
 	}
 
 	user := &types.User{}
 	err = ds.Users.GetUserByLogin(loginRequest, user)
 	// No user was found with that email and password
 	if err != nil {
-		c.SendNotFound(w, r)
-		return
+		return routerutils.NotFound()
 	}
 
 	token, err := ds.Sessions.NewSession(user.ID)
 	if err != nil {
-		c.SendInternalError(w, r)
-		return
+		return routerutils.InternalError()
 	}
 
-	c.SendJSON(
-		w,
-		r,
-		map[string]interface{}{"success": true, "token": token},
-		http.StatusOK,
-	)
+	return http.StatusOK, routerutils.Response(map[string]interface{}{"token": token})
 }
