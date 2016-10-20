@@ -32,5 +32,5 @@ func InitRouter() http.Handler {
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Parkn API V1")
+	io.WriteString(w, "Parkn API V1\n")
 }
