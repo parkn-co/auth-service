@@ -11,11 +11,11 @@ func (u *LoginRequest) Validate() (map[string]string, bool) {
 	errors := make(map[string]string)
 
 	if u.Email == "" {
-		errors["Email"] = "Email is required"
+		errors["email"] = "Email is required"
 	}
 
 	if u.Password == "" {
-		errors["Password"] = "Password is required"
+		errors["password"] = "Password is required"
 	}
 
 	return errors, len(errors) == 0

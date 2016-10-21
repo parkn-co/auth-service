@@ -11,9 +11,9 @@ func setAuthenticationRoutes(router *mux.Router, ds *datastore.DataStore) {
 	authController := controllers.NewAuthController(ds)
 	sub := router.PathPrefix("/auth/").Subrouter()
 
-	sub.Handle("/signup", routerutils.NewHandler(authController.SignUp)).
+	sub.Handle("/signup/", routerutils.NewHandler(authController.SignUp)).
 		Methods("POST")
 
-	sub.Handle("/signin", routerutils.NewHandler(authController.SignIn)).
+	sub.Handle("/signin/", routerutils.NewHandler(authController.SignIn)).
 		Methods("POST")
 }

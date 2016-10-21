@@ -39,5 +39,5 @@ func InternalError() (int, interface{}) {
 
 // NotFound is a helper func to return a not found error
 func NotFound() (int, interface{}) {
-	return http.StatusInternalServerError, ErrorResponse("Not found")
+	return http.StatusNotFound, ErrorResponse("Not found")
 }

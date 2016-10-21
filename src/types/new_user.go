@@ -15,21 +15,21 @@ func (u *NewUser) Validate() (map[string]string, bool) {
 	errors := make(map[string]string)
 
 	if u.Email == "" {
-		errors["Email"] = "Email is required"
+		errors["email"] = "Email is required"
 	} else if !utilities.IsEmailValid(u.Email) {
-		errors["Email"] = "Please enter a valid email address"
+		errors["email"] = "Please enter a valid email address"
 	}
 
 	if u.FirstName == "" {
-		errors["FirstName"] = "First name is required"
+		errors["firstName"] = "First name is required"
 	}
 
 	if u.LastName == "" {
-		errors["LastName"] = "Last name is required"
+		errors["lastName"] = "Last name is required"
 	}
 
 	if u.Password == "" {
-		errors["Password"] = "Password is required"
+		errors["password"] = "Password is required"
 	}
 
 	return errors, len(errors) == 0
