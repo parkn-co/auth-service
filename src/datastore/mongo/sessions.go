@@ -53,3 +53,13 @@ func (sessions *SessionsCollection) GetSessionByToken(token string, session *typ
 
 	return nil
 }
+
+// DestroySession destroys a session by a given token
+func (sessions *SessionsCollection) DestroySession(token string) error {
+	err := sessions.collection.Remove(bson.M{"token": token})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -94,3 +94,16 @@ func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) (int, in
 
 	return http.StatusOK, routerutils.Response(map[string]interface{}{"token": token})
 }
+
+// SignOut destroys a session by the given token
+func (c *Authentication) SignOut(res http.ResponseWriter, req *http.Request) (int, interface{}) {
+	ds := c.DataStore.NewDataStore()
+	defer ds.Close()
+
+	token := req.Header.Get("Authorization")
+	if token != "" {
+		_ = ds.Sessions.DestroySession(token)
+	}
+
+	return http.StatusOK, nil
+}
