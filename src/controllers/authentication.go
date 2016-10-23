@@ -105,5 +105,5 @@ func (c *Authentication) SignOut(res http.ResponseWriter, req *http.Request) (in
 		_ = ds.Sessions.DestroySession(token)
 	}
 
-	return http.StatusOK, nil
+	return http.StatusOK, routerutils.Response(nil)
 }
