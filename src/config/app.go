@@ -12,6 +12,8 @@ import (
 // program initialization time, so its config options can also be used
 // at initialization time in any packages that depend on it.
 var App struct {
+	ENV string `env:"GO_ENV"`
+
 	Server struct {
 		Port string `env:"PORT"`
 	}
@@ -29,6 +31,9 @@ var App struct {
 }
 
 func init() {
+	// Will get overwritten if production env is set
+	App.ENV = "develop"
+
 	setFromEnv(reflect.ValueOf(&App))
 }
 
