@@ -11,8 +11,8 @@ import (
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	router := router.InitRouter()
+	r := router.InitRouter()
 
 	log.Println("Listening at 0.0.0.0:", config.App.Server.Port)
-	log.Println(http.ListenAndServe("0.0.0.0:"+config.App.Server.Port, router))
+	log.Println(http.ListenAndServe("0.0.0.0:"+config.App.Server.Port, r))
 }
