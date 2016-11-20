@@ -2,21 +2,21 @@ package router
 
 import (
 	"github.com/gorilla/mux"
+	routing "github.com/parkn-co/go-routing"
 	"github.com/parkn-co/parkn-server/src/controllers"
 	"github.com/parkn-co/parkn-server/src/datastore"
-	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 func setAuthenticationRoutes(router *mux.Router, ds *datastore.DataStore) {
 	authController := controllers.NewAuthController(ds)
 	sub := router.PathPrefix("/auth/").Subrouter()
 
-	sub.Handle("/signup/", routerutils.NewHandler(authController.SignUp)).
+	sub.Handle("/signup/", routing.NewHandler(authController.SignUp)).
 		Methods("POST")
 
-	sub.Handle("/signin/", routerutils.NewHandler(authController.SignIn)).
+	sub.Handle("/signin/", routing.NewHandler(authController.SignIn)).
 		Methods("POST")
 
-	sub.Handle("/signout/", routerutils.NewHandler(authController.SignOut)).
+	sub.Handle("/signout/", routing.NewHandler(authController.SignOut)).
 		Methods("POST")
 }

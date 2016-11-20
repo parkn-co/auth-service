@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/context"
+	routing "github.com/parkn-co/go-routing"
 	"github.com/parkn-co/parkn-server/src/datastore"
-	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 // Users is the controller for routes dealing with users
@@ -22,5 +22,5 @@ func NewUsersController(ds *datastore.DataStore) *Users {
 func (c *Users) UserProfile(w http.ResponseWriter, r *http.Request) (int, interface{}) {
 	user := context.Get(r, "user")
 
-	return http.StatusOK, routerutils.Response(user)
+	return http.StatusOK, routing.Response(user)
 }

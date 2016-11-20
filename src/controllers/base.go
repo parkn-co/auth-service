@@ -5,9 +5,9 @@ import (
 
 	"github.com/gorilla/Schema"
 	"github.com/gorilla/context"
+	routing "github.com/parkn-co/go-routing"
 	"github.com/parkn-co/parkn-server/src/datastore"
 	"github.com/parkn-co/parkn-server/src/types"
-	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 // baseController is the base controller for all controllers in this api
@@ -33,7 +33,7 @@ func (c *baseController) RequireAuthentication(res http.ResponseWriter, req *htt
 	session := &types.Session{}
 	err := ds.Sessions.GetSessionByToken(token, session)
 	if err != nil {
-		return routerutils.Unauthorized()
+		return routing.Unauthorized()
 	}
 
 	context.Set(req, "user", session.User.(types.User))

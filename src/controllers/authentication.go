@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	routing "github.com/parkn-co/go-routing"
 	"github.com/parkn-co/parkn-server/src/datastore"
 	"github.com/parkn-co/parkn-server/src/types"
-	"github.com/parkn-co/parkn-server/src/utilities/router_utils"
 )
 
 // Authentication is the controller for authentication routes
@@ -34,32 +34,32 @@ func (c *Authentication) SignUp(w http.ResponseWriter, r *http.Request) (int, in
 	user := types.NewUser{}
 	err = c.decoder.Decode(&user, r.PostForm)
 	if err != nil {
-		return routerutils.NotFound()
+		return routing.NotFound()
 	}
 
 	errors, ok := user.Validate()
 	if !ok {
-		return http.StatusBadRequest, routerutils.FormErrorResponse(errors)
+		return http.StatusBadRequest, routing.FormErrorResponse(errors)
 	}
 
 	// check to make sure user doesn't already exist here
 	if c.DataStore.Users.UserExistsByEmail(user.Email) {
 		errs := "Email is associated with an existing account"
 
-		return http.StatusConflict, routerutils.ErrorResponse(errs)
+		return http.StatusConflict, routing.ErrorResponse(errs)
 	}
 
 	id, err := c.DataStore.Users.CreateUser(&user)
 	if err != nil {
-		return routerutils.InternalError()
+		return routing.InternalError()
 	}
 
 	token, err := ds.Sessions.NewSession(id)
 	if err != nil {
-		return routerutils.InternalError()
+		return routing.InternalError()
 	}
 
-	return http.StatusCreated, routerutils.Response(map[string]interface{}{"token": token})
+	return http.StatusCreated, routing.Response(map[string]interface{}{"token": token})
 }
 
 // SignIn is the handler for signing in
@@ -72,27 +72,27 @@ func (c *Authentication) SignIn(w http.ResponseWriter, r *http.Request) (int, in
 	loginRequest := &types.LoginRequest{}
 	err = c.decoder.Decode(loginRequest, r.PostForm)
 	if err != nil {
-		return routerutils.NotFound()
+		return routing.NotFound()
 	}
 
 	errs, ok := loginRequest.Validate()
 	if !ok {
-		return http.StatusBadRequest, routerutils.FormErrorResponse(errs)
+		return http.StatusBadRequest, routing.FormErrorResponse(errs)
 	}
 
 	user := &types.User{}
 	err = ds.Users.GetUserByLogin(loginRequest, user)
 	// No user was found with that email and password
 	if err != nil {
-		return routerutils.NotFound()
+		return routing.NotFound()
 	}
 
 	token, err := ds.Sessions.NewSession(user.ID)
 	if err != nil {
-		return routerutils.InternalError()
+		return routing.InternalError()
 	}
 
-	return http.StatusOK, routerutils.Response(map[string]interface{}{"token": token})
+	return http.StatusOK, routing.Response(map[string]interface{}{"token": token})
 }
 
 // SignOut destroys a session by the given token
@@ -105,5 +105,5 @@ func (c *Authentication) SignOut(res http.ResponseWriter, req *http.Request) (in
 		_ = ds.Sessions.DestroySession(token)
 	}
 
-	return http.StatusOK, routerutils.Response(nil)
+	return http.StatusOK, routing.Response(nil)
 }
